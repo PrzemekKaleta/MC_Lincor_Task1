@@ -3,6 +3,8 @@ package monitor;
 import com.sun.management.OperatingSystemMXBean;
 
 import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CpuMemoryMonitor {
 
@@ -10,6 +12,10 @@ public class CpuMemoryMonitor {
     Runtime runtime = Runtime.getRuntime();
 
     private int dataSize = 1024 * 1024;
+
+    private List<Double> cpuLoads = new ArrayList<>();
+    private List<Double> memoryLoads = new ArrayList<>();
+    private double calibratedMemory;
 
     public String getEffor(){
 
@@ -20,4 +26,29 @@ public class CpuMemoryMonitor {
 
     }
 
+    public void makeMemoryCalibration(){
+        this.calibratedMemory = (runtime.totalMemory() - runtime.freeMemory())/dataSize;
+    }
+
+    public void makeMesurment(){
+
+        this.cpuLoads.add(operatingSystem.getProcessCpuLoad() * 100);
+        this.memoryLoads.add((double)(runtime.totalMemory() - calibratedMemory - runtime.freeMemory())/dataSize);
+    }
+
+    public List<Double> getCpuLoads() {
+        return cpuLoads;
+    }
+
+    public List<Double> getMemoryLoads() {
+        return memoryLoads;
+    }
+
+    public double getAverageCpuLoads(){
+        return cpuLoads.stream().mapToDouble(a->a).average().orElse(0.0);
+    }
+
+    public double getAverageMemoryLoads(){
+        return memoryLoads.stream().mapToDouble(a->a).average().orElse(0.0);
+    }
 }

@@ -8,11 +8,11 @@ import service.Service;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+
 
 public class Main {
 
-    private final static int COMPLEXITY = 8;
+    private final static int COMPLEXITY = 10;
 
     public static void main(String[] args) {
 
@@ -51,6 +51,7 @@ public class Main {
         //Utworzenie wątków do zapytań i ich wywołanie
 
         timeMonitor.go();
+        cpuMemoryMonitor.makeMemoryCalibration();
         System.out.println(cpuMemoryMonitor.getEffor());
 
         Thread queryThread = new Thread(() -> {
@@ -60,6 +61,9 @@ public class Main {
             while (uuidIterator.hasNext()){
                 service.getItem(uuidIterator.next());
                 counterQ++;
+                if(counterQ % 100 == 0){
+                    cpuMemoryMonitor.makeMesurment();
+                }
 
             }
             System.out.println("Query thread finish job [counter = " + counterQ + "]");
@@ -74,6 +78,9 @@ public class Main {
                 Item item = itemIteratorCommand.next();
                 service.addItem(item.getID_uuid(), item.getName());
                 counterC++;
+                if(counterC % 100 == 0){
+                    cpuMemoryMonitor.makeMesurment();
+                }
             }
             System.out.println("Command thread finish job [counter = " + counterC + "]");
 
@@ -97,6 +104,11 @@ public class Main {
 
         int expectedEndResult = (int) (Math.pow(2.0, COMPLEXITY)) * 6;
         System.out.println("END with " + service.getItemsQuantity() + " items" + "[expected end result: " + expectedEndResult + "]");
+
+        System.out.println(cpuMemoryMonitor.getAverageCpuLoads());
+        System.out.println(cpuMemoryMonitor.getAverageMemoryLoads());
+        System.out.println(cpuMemoryMonitor.getCpuLoads().size());
+        System.out.println(cpuMemoryMonitor.getMemoryLoads().size());
 
     }
 }
