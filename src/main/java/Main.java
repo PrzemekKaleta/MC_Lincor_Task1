@@ -49,7 +49,50 @@ public class Main {
         }catch (InterruptedException ex){
             ex.printStackTrace();
         }
-        
+
+        //Utworzenie wątków do zapytań i ich wywołanie
+
+        Thread queryThread = new Thread(() -> {
+
+            int counterQ = 0;
+
+            while (uuidIterator.hasNext()){
+                service.getItem(uuidIterator.next());
+                counterQ++;
+
+            }
+            System.out.println("Query thread finish job [counter = " + counterQ + "]");
+
+        });
+
+        Thread commandsThread = new Thread(() -> {
+
+            int counterC = 0;
+
+            while (itemIteratorCommand.hasNext()){
+                Item item = itemIteratorCommand.next();
+                service.addItem(item.getID_uuid(), item.getName());
+                counterC++;
+            }
+            System.out.println("Command thread finish job [counter = " + counterC + "]");
+
+        });
+
+        queryThread.start();
+        commandsThread.start();
+
+        try{
+            queryThread.join();
+            commandsThread.join();
+        }catch (InterruptedException ex){
+            ex.getMessage();
+        }
+
+
+        //Sprawdzenie poprawnego zakończenia wątków
+
+        int expectedEndResult = (int) (Math.pow(2.0, COMPLEXITY)) * 6;
+        System.out.println("END with " + service.getItemsQuantity() + " items" + "[expected end result: " + expectedEndResult + "]");
 
     }
 }
