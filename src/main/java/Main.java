@@ -1,5 +1,7 @@
 import creator.TabCreator;
 import entity.Item;
+import monitor.CpuMemoryMonitor;
+import monitor.TimeMonitor;
 import repository.RepositoryBasis;
 import service.Service;
 
@@ -10,11 +12,15 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-    private final static int COMPLEXITY = 10;
+    private final static int COMPLEXITY = 8;
 
     public static void main(String[] args) {
 
         //PRZYGTOWANIE DO TESTU
+
+        TimeMonitor timeMonitor = new TimeMonitor();
+        CpuMemoryMonitor cpuMemoryMonitor = new CpuMemoryMonitor();
+
 
         //Uworzenie tablic w kreatorze - tablica danych, tablica zapytań, tablica do zapisów
         //comlexityNumber - przyjmuje od 1 do 20 oznacza ile rekordów i zapytań zostanie utworzonych (2 do potęgi n)
@@ -42,15 +48,10 @@ public class Main {
         Iterator<UUID> uuidIterator = queryUUID.iterator();
 
 
-        //Przerwa w programie na zakończenie działań CPU
-
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        }catch (InterruptedException ex){
-            ex.printStackTrace();
-        }
-
         //Utworzenie wątków do zapytań i ich wywołanie
+
+        timeMonitor.go();
+        System.out.println(cpuMemoryMonitor.getEffor());
 
         Thread queryThread = new Thread(() -> {
 
@@ -87,6 +88,9 @@ public class Main {
         }catch (InterruptedException ex){
             ex.getMessage();
         }
+
+        System.out.println(cpuMemoryMonitor.getEffor());
+        timeMonitor.stop();
 
 
         //Sprawdzenie poprawnego zakończenia wątków
