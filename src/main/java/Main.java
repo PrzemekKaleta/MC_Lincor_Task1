@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class Main {
 
-    private final static int COMPLEXITY = 10;
+    private final static int COMPLEXITY = 16;
 
     public static void main(String[] args) {
 
@@ -100,15 +100,20 @@ public class Main {
         timeMonitor.stop();
 
 
-        //Sprawdzenie poprawnego zakończenia wątków
+        //Sprawdzenie poprawnego zakończenia wątków i wyniki
 
         int expectedEndResult = (int) (Math.pow(2.0, COMPLEXITY)) * 6;
         System.out.println("END with " + service.getItemsQuantity() + " items" + "[expected end result: " + expectedEndResult + "]");
 
-        System.out.println(cpuMemoryMonitor.getAverageCpuLoads());
-        System.out.println(cpuMemoryMonitor.getAverageMemoryLoads());
-        System.out.println(cpuMemoryMonitor.getCpuLoads().size());
-        System.out.println(cpuMemoryMonitor.getMemoryLoads().size());
+        double timeResult = timeMonitor.getMiliSec();
+
+        double totalRequest = (Math.pow(2.0, COMPLEXITY) * 2);
+
+        double testResult = totalRequest / timeResult;
+
+        System.out.println(String.format("Test duration: %.2f ms, requests: %.0f , final result: %.2f k requests per sec", timeResult,totalRequest,testResult));
+
+        cpuMemoryMonitor.getReport();
 
     }
 }

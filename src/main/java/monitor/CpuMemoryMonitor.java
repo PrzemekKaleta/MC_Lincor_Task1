@@ -51,4 +51,11 @@ public class CpuMemoryMonitor {
     public double getAverageMemoryLoads(){
         return memoryLoads.stream().mapToDouble(a->a).average().orElse(0.0);
     }
+
+    public void getReport(){
+        double averageCpuLoads = getAverageCpuLoads();
+        double averageMemoryLoads = getAverageMemoryLoads();
+
+        System.out.println(String.format("Average load: CPU - %.2f , Memory - %.2f MB", averageCpuLoads, averageMemoryLoads));
+    }
 }
